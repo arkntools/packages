@@ -1,12 +1,12 @@
 {
   "name": "@arkntools/lame-wasm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./dist/lame.js",
   "types": "./dist/lame.d.ts",
   "author": "神代綺凛 <i@loli.best>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/arkntools/arkntools-packages.git"
+    "url": "git+https://github.com/arkntools/packages.git"
   },
   "files": [
     "dist"
