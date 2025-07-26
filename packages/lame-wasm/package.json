@@ -1,8 +1,9 @@
 {
   "name": "@arkntools/lame-wasm",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "./dist/lame.js",
   "types": "./dist/lame.d.ts",
+  "browser": "./dist/browser.js",
   "author": "神代綺凛 <i@loli.best>",
   "repository": {
     "type": "git",

@@ -1,8 +1,9 @@
 {
   "name": "@arkntools/fmod",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "main": "./fmod_reduced.js",
   "types": "./fmod_reduced.d.ts",
+  "browser": "./browser.js",
   "author": "神代綺凛 <i@loli.best>",
   "repository": {
     "type": "git",
