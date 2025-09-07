@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         Arkntools Extension
-// @name:zh      Arkntools 扩展
+// @name:zh-CN   Arkntools 扩展
+// @name:zh-TW   Arkntools 扩展
 // @namespace    https://github.com/arkntools
 // @version      1.0.0
 // @description  Provide some additional capabilities for Arkntools applications
-// @description:zh  为 Arkntools 应用提供一些额外能力
+// @description:zh-CN  为 Arkntools 应用提供一些额外能力
+// @description:zh-TW  为 Arkntools 应用提供一些额外能力
 // @author       神代綺凛
 // @match        https://arkntools.app/
 // @match        https://*.arkntools.app/
