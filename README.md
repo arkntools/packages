@@ -1,7 +1,3 @@
-## FMOD
+# arkntools-packages
 
-https://www.fmod.com/
-
-## lame-wasm
-
-https://github.com/vincentcr/lame-wasm
+Some `@arkntools/*` packages

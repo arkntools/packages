@@ -1,0 +1,12 @@
+{
+  "name": "arkntools-packages-monorepo",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "catalog": {
+      "typescript": "^5"
+    }
+  }
+}

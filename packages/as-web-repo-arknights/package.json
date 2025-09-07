@@ -1,0 +1,27 @@
+{
+  "name": "@arkntools/as-web-repo-arknights",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "author": "神代綺凛 <i@loli.best>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arkntools/packages.git"
+  },
+  "keywords": [
+    "as-web-repo"
+  ],
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun build --target=browser --outdir=dist --minify ./src/index.ts"
+  },
+  "devDependencies": {
+    "@arkntools/as-web-repo": "workspace:^",
+    "typescript": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

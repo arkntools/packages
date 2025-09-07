@@ -1,19 +1,14 @@
 {
-  "name": "@arkntools/lame-wasm",
-  "version": "1.0.2",
-  "main": "./dist/lame.js",
-  "types": "./dist/lame.d.ts",
-  "browser": "./dist/browser.js",
+  "name": "@arkntools/userscript-extension",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "author": "神代綺凛 <i@loli.best>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arkntools/packages.git"
   },
-  "keywords": [
-    "lame",
-    "wasm",
-    "audio"
-  ],
   "files": [
     "dist"
   ],
@@ -21,7 +16,9 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "@types/node": "^24.1.0",
     "typescript": "catalog:"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
