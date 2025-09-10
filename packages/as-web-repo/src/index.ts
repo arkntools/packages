@@ -48,6 +48,4 @@ export type GetResourceOptions = Pick<GmXmlhttpRequestOption<any>, 'onprogress'>
 /** Type helper to define as-web repositories */
 export const defineRepositories = (repositories: RepositoryItem[]) => repositories;
 
-export const request = ext.request;
-
 export const lib = ext;

@@ -1,5 +1,5 @@
 import type { GetResourceOptions, RepositoryItem, ResourceItem } from '@arkntools/as-web-repo';
-import { defineRepositories, request } from '@arkntools/as-web-repo';
+import { defineRepositories, lib } from '@arkntools/as-web-repo';
 
 interface NetWorkConfig {
   configVer: string;
@@ -40,7 +40,7 @@ interface AbInfo {
 
 const fetchJson = async <T = any>(url: string): Promise<T> =>
   new Promise((resolve, reject) => {
-    request({
+    lib.request({
       url,
       responseType: 'json',
       fetch: true,
@@ -83,7 +83,7 @@ class ArknightsRepository implements RepositoryItem {
   async getResource(version: string, { name }: ResourceItem, options?: GetResourceOptions) {
     const url = await this.getResUrl(version, name);
     return new Promise<Blob>((resolve, reject) => {
-      request({
+      lib.request({
         ...options,
         url,
         responseType: 'blob',
