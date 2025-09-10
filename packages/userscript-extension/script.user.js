@@ -3,7 +3,7 @@
 // @name:zh-CN   Arkntools 扩展
 // @name:zh-TW   Arkntools 扩展
 // @namespace    https://github.com/arkntools
-// @version      1.0.0
+// @version      1.0.1
 // @description  Provide some additional capabilities for Arkntools applications
 // @description:zh-CN  为 Arkntools 应用提供一些额外能力
 // @description:zh-TW  为 Arkntools 应用提供一些额外能力
@@ -35,4 +35,6 @@
   unsafeWindow.__arkntools_extensions__ = {
     GM_xmlhttpRequest,
   };
+
+  unsafeWindow.__arkntools_extensions_ready_callback__?.(unsafeWindow.__arkntools_extensions__);
 })();

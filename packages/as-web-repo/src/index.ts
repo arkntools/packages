@@ -1,4 +1,7 @@
 import type { GmXmlhttpRequestOption } from '@arkntools/userscript-extension';
+import ext from '@arkntools/userscript-extension';
+
+export * from '@arkntools/userscript-extension';
 
 export interface ResourceItem {
   /** Unique ID, and shouldn't be changed for the same resource even if the version is changed */
@@ -45,4 +48,6 @@ export type GetResourceOptions = Pick<GmXmlhttpRequestOption<any>, 'onprogress'>
 /** Type helper to define as-web repositories */
 export const defineRepositories = (repositories: RepositoryItem[]) => repositories;
 
-export * from '@arkntools/userscript-extension';
+export const request = ext.request;
+
+export const lib = ext;

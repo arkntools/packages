@@ -2,10 +2,36 @@ import type { GmXmlhttpRequestType } from './gm';
 
 export type * from './gm';
 
-const extensions = (window as any).__arkntools_extensions__;
+let ready = false;
+let readyResolver: PromiseWithResolvers<void> | undefined;
+let extensions = (window as any).__arkntools_extensions__;
 
-/** Whether the extensions is available */
-export const available = Boolean(extensions);
+const exports = {
+  /** Whether the extensions is available */
+  available: () => ready,
+  /** Wait for the extensions to be available */
+  waitAvailable: async () => {
+    if (ready) return;
+    return readyResolver?.promise;
+  },
+  /** Same as `GM_xmlhttpRequest` */
+  request: null as any as GmXmlhttpRequestType,
+};
 
-/** Same as `GM_xmlhttpRequest` */
-export const request: GmXmlhttpRequestType = extensions?.GM_xmlhttpRequest;
+const init = () => {
+  ready = true;
+  exports.request = extensions.GM_xmlhttpRequest;
+  readyResolver?.resolve();
+  readyResolver = undefined;
+};
+
+if (extensions) {
+  init();
+} else {
+  (window as any).__arkntools_extensions_ready_callback__ = (m: any) => {
+    extensions = m;
+    init();
+  };
+}
+
+export default exports;
