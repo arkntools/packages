@@ -70,7 +70,7 @@ class ArknightsRepository implements RepositoryItem {
     const assetsBaseUrl = await this.getAssetsBaseUrl(version);
     const { abInfos } = await fetchJson<{ abInfos: AbInfo[] }>(`${assetsBaseUrl}/hot_update_list.json`);
     return abInfos
-      .filter(({ name }) => name.endsWith('.ab'))
+      .filter(({ name }) => !name.endsWith('.idx'))
       .map(({ cid, name, hash, totalSize, abSize }) => ({
         id: name || cid,
         name,
