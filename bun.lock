@@ -6,9 +6,9 @@
     },
     "packages/as-web-repo": {
       "name": "@arkntools/as-web-repo",
-      "version": "1.0.0",
+      "version": "1.0.4",
       "dependencies": {
-        "@arkntools/userscript-extension": "workspace:*",
+        "@arkntools/userscript-extension": "workspace:^",
       },
       "devDependencies": {
         "typescript": "catalog:",
@@ -16,9 +16,9 @@
     },
     "packages/as-web-repo-arknights": {
       "name": "@arkntools/as-web-repo-arknights",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "devDependencies": {
-        "@arkntools/as-web-repo": "workspace:*",
+        "@arkntools/as-web-repo": "workspace:^",
         "typescript": "catalog:",
       },
     },
@@ -36,7 +36,7 @@
     },
     "packages/userscript-extension": {
       "name": "@arkntools/userscript-extension",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "devDependencies": {
         "typescript": "catalog:",
       },
