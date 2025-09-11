@@ -28,6 +28,7 @@ const init = () => {
 if (extensions) {
   init();
 } else {
+  readyResolver = Promise.withResolvers();
   (window as any).__arkntools_extensions_ready_callback__ = (m: any) => {
     extensions = m;
     init();

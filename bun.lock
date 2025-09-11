@@ -6,7 +6,7 @@
     },
     "packages/as-web-repo": {
       "name": "@arkntools/as-web-repo",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "dependencies": {
         "@arkntools/userscript-extension": "workspace:^",
       },
@@ -36,7 +36,7 @@
     },
     "packages/userscript-extension": {
       "name": "@arkntools/userscript-extension",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "devDependencies": {
         "typescript": "catalog:",
       },
