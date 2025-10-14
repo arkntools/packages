@@ -8,5 +8,8 @@
     "catalog": {
       "typescript": "^5"
     }
+  },
+  "scripts": {
+    "update-lock": "bun update --lockfile-only"
   }
 }

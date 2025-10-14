@@ -3,6 +3,8 @@ import ext from '@arkntools/userscript-extension';
 
 export * from '@arkntools/userscript-extension';
 
+export type MaybePromise<T> = T | Promise<T>;
+
 export interface ResourceItem {
   /** Unique ID, and shouldn't be changed for the same resource even if the version is changed */
   id: string | number;
@@ -35,17 +37,59 @@ export interface RepositoryItem {
    */
   getResourceList: (version: string) => Promise<ResourceItem[]>;
   /**
-   * Get resource
-   * @param version Resource version
-   * @param item Resource item
-   * @returns Resource data
+   * use `getResourceHelper` to define this function
    */
-  getResource: (version: string, item: ResourceItem, options?: GetResourceOptions) => Promise<Blob>;
+  getResource: (params: GetResourceParams) => Promise<Blob>;
 }
 
-export type GetResourceOptions = Pick<GmXmlhttpRequestOption<any>, 'onprogress'>;
+export interface GetResourceParams {
+  version: string;
+  item: ResourceItem;
+  options?: GetResourceRequestOptions;
+  signal?: AbortSignal;
+}
+
+export type GetResourceRequestOptions = Pick<GmXmlhttpRequestOption<any>, 'onprogress'>;
 
 /** Type helper to define as-web repositories */
 export const defineRepositories = (repositories: RepositoryItem[]) => repositories;
 
 export const lib = ext;
+
+/**
+ * @param handler Handler to get `GM_xmlhttpRequest` request options
+ * @returns `RepositoryItem.getResource` function
+ */
+export const getResourceHelper =
+  (
+    handler: (
+      version: string,
+      item: ResourceItem
+    ) => MaybePromise<
+      Omit<GmXmlhttpRequestOption<any>, 'responseType' | 'onload' | 'onerror' | 'onabort' | 'onprogress' | 'fetch'>
+    >
+  ): RepositoryItem['getResource'] =>
+  async ({ version, item, options, signal }) => {
+    const basicOptions = await handler(version, item);
+
+    return new Promise<Blob>((resolve, reject) => {
+      const { abort } = lib.request({
+        ...basicOptions,
+        ...options,
+        responseType: 'blob',
+        onload: res => {
+          signal?.removeEventListener('abort', abort);
+          resolve(res.response);
+        },
+        onerror: res => {
+          signal?.removeEventListener('abort', abort);
+          reject(res.error);
+        },
+        onabort: () => {
+          reject(signal?.reason);
+        },
+      });
+
+      signal?.addEventListener('abort', abort);
+    });
+  };

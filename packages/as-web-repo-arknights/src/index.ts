@@ -1,5 +1,5 @@
-import type { GetResourceOptions, RepositoryItem, ResourceItem } from '@arkntools/as-web-repo';
-import { defineRepositories, lib } from '@arkntools/as-web-repo';
+import type { RepositoryItem, ResourceItem } from '@arkntools/as-web-repo';
+import { defineRepositories, getResourceHelper, lib } from '@arkntools/as-web-repo';
 
 interface NetWorkConfig {
   configVer: string;
@@ -80,18 +80,10 @@ class ArknightsRepository implements RepositoryItem {
       }));
   }
 
-  async getResource(version: string, { name }: ResourceItem, options?: GetResourceOptions) {
+  getResource = getResourceHelper(async (version: string, { name }: ResourceItem) => {
     const url = await this.getResUrl(version, name);
-    return new Promise<Blob>((resolve, reject) => {
-      lib.request({
-        ...options,
-        url,
-        responseType: 'blob',
-        onload: res => resolve(res.response),
-        onerror: res => reject(res.error),
-      });
-    });
-  }
+    return { url };
+  });
 
   private async getUrlCfg() {
     if (this.urls) return this.urls;
