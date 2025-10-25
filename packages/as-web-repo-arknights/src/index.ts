@@ -1,5 +1,6 @@
-import type { RepositoryItem, ResourceItem } from '@arkntools/as-web-repo';
+import type { AssetInfo, RepositoryItem, ResourceItem } from '@arkntools/as-web-repo';
 import { defineRepositories, getResourceHelper, lib } from '@arkntools/as-web-repo';
+import { getUnpackerName, getUnpacker } from './fbs';
 
 interface NetWorkConfig {
   configVer: string;
@@ -84,6 +85,15 @@ class ArknightsRepository implements RepositoryItem {
     const url = await this.getResUrl(version, name);
     return { url };
   });
+
+  hasDataHandler(info: AssetInfo) {
+    return Boolean(getUnpackerName(info.container));
+  }
+
+  dataHandler(info: AssetInfo, data: unknown) {
+    const unpacker = getUnpacker(info.container);
+    return unpacker(data);
+  }
 
   private async getUrlCfg() {
     if (this.urls) return this.urls;

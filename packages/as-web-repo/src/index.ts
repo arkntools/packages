@@ -37,9 +37,24 @@ export interface RepositoryItem {
    */
   getResourceList: (version: string) => Promise<ResourceItem[]>;
   /**
-   * use `getResourceHelper` to define this function
+   * Use `getResourceHelper` to define this function
    */
   getResource: (params: GetResourceParams) => Promise<Blob>;
+  /**
+   * **Advanced:** If return true, `dataHandler` will be called when load asset data
+   */
+  hasDataHandler?: (info: AssetInfo) => MaybePromise<boolean>;
+  /**
+   * **Advanced:** Process data and use the return value as the final result
+   */
+  dataHandler?: (info: AssetInfo, data: unknown) => MaybePromise<unknown>;
+}
+
+export interface AssetInfo {
+  fileName: string;
+  name: string;
+  container: string;
+  type: string;
 }
 
 export interface GetResourceParams {

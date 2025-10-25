@@ -6,7 +6,7 @@
     },
     "packages/as-web-repo": {
       "name": "@arkntools/as-web-repo",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "dependencies": {
         "@arkntools/userscript-extension": "workspace:^",
       },
@@ -16,9 +16,11 @@
     },
     "packages/as-web-repo-arknights": {
       "name": "@arkntools/as-web-repo-arknights",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "devDependencies": {
         "@arkntools/as-web-repo": "workspace:^",
+        "comlink": "^4.4.2",
+        "es-toolkit": "^1.41.0",
         "typescript": "catalog:",
       },
     },
@@ -57,6 +59,10 @@
     "@arkntools/userscript-extension": ["@arkntools/userscript-extension@workspace:packages/userscript-extension"],
 
     "@types/node": ["@types/node@24.3.1", "", { "dependencies": { "undici-types": "~7.10.0" } }, "sha512-3vXmQDXy+woz+gnrTvuvNrPzekOi+Ds0ReMxw0LzBiK3a+1k0kQn9f2NWk+lgD4rJehFUmYy2gMhJ2ZI+7YP9g=="],
+
+    "comlink": ["comlink@4.4.2", "", {}, "sha512-OxGdvBmJuNKSCMO4NTl1L47VRp6xn2wG4F/2hYzB6tiCb709otOxtEYCSvK80PtjODfXXZu8ds+Nw5kVCjqd2g=="],
+
+    "es-toolkit": ["es-toolkit@1.41.0", "", {}, "sha512-bDd3oRmbVgqZCJS6WmeQieOrzpl3URcWBUVDXxOELlUW2FuW+0glPOz1n0KnRie+PdyvUZcXz2sOn00c6pPRIA=="],
 
     "typescript": ["typescript@5.9.2", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A=="],
 
