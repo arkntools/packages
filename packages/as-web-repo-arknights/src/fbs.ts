@@ -2,8 +2,9 @@ import { wrap } from 'comlink';
 import { once } from 'es-toolkit';
 import type { UnpackWorker } from './worker/unpack';
 
-const getWorker = once(() => {
-  const worker = new Worker(new URL('./worker/unpack.js', import.meta.url));
+const getWorker = once(async () => {
+  const res = await fetch(new URL('./worker/unpack.js', import.meta.url));
+  const worker = new Worker(URL.createObjectURL(await res.blob()));
   return wrap<UnpackWorker>(worker);
 });
 
@@ -107,17 +108,15 @@ export const getUnpackerName = (container: string) => {
   if (container.startsWith('dyn/gamedata/excel/') && container.endsWith('.bytes')) return '__decrypt_text_asset__';
 };
 
-export const getUnpacker = (container: string) => {
+export const unpack = async (container: string, data: unknown) => {
   const name = getUnpackerName(container)!;
-  const worker = getWorker();
-  return async (data: unknown) => {
-    try {
-      const bytes = await toUint8Array(data);
-      if (!bytes) return data;
-      return await worker.unpack(name, bytes);
-    } catch (error) {
-      console.error(error);
-      return data;
-    }
-  };
+  try {
+    const worker = await getWorker();
+    const bytes = await toUint8Array(data);
+    if (!bytes) return data;
+    return await worker.unpack(name, bytes);
+  } catch (error) {
+    console.error(error);
+    return data;
+  }
 };
