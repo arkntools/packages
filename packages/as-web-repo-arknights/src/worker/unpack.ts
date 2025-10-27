@@ -1,5 +1,5 @@
 import { expose } from 'comlink';
-import { isFunction } from 'es-toolkit';
+import { isFunction, once } from 'es-toolkit';
 
 const START_OFFSET = 128;
 
@@ -28,6 +28,8 @@ const AES_KEY = new TextEncoder().encode('UITpAi82pHAWwnzq');
 const AES_IV_MASK = new TextEncoder().encode('HRMCwPonJLIB3WCl');
 const AES_IV_LENGTH = 16;
 
+const getAesKey = once(() => crypto.subtle.importKey('raw', AES_KEY, 'AES-CBC', false, ['decrypt']));
+
 const xorUint8Array = (a: Uint8Array, b: Uint8Array) => {
   const length = Math.min(a.length, b.length);
   const result = new Uint8Array(length);
@@ -37,16 +39,16 @@ const xorUint8Array = (a: Uint8Array, b: Uint8Array) => {
   return result;
 };
 
-const aesDecrypt = async (data: Uint8Array<ArrayBuffer>, key: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer>) => {
-  const cryptoKey = await crypto.subtle.importKey('raw', key, 'AES-CBC', false, ['decrypt']);
-  const decryptedData = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, cryptoKey, data);
+const aesDecrypt = async (data: Uint8Array<ArrayBuffer>, iv: Uint8Array<ArrayBuffer>) => {
+  const key = await getAesKey();
+  const decryptedData = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, key, data);
   return decryptedData;
 };
 
 const decryptTextAsset = async (data: Uint8Array) => {
   const buf = data.slice(START_OFFSET, START_OFFSET + AES_IV_LENGTH);
   const aesIv = xorUint8Array(buf, AES_IV_MASK);
-  const decryptedData = await aesDecrypt(data.slice(START_OFFSET + AES_IV_LENGTH), AES_KEY, aesIv);
+  const decryptedData = await aesDecrypt(data.slice(START_OFFSET + AES_IV_LENGTH), aesIv);
   const text = new TextDecoder().decode(decryptedData);
   if (text.startsWith('{')) {
     try {
