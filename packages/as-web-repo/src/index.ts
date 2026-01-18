@@ -5,6 +5,16 @@ export * from '@arkntools/userscript-extension';
 
 export type MaybePromise<T> = T | Promise<T>;
 
+export enum BundleEnv {
+  NONE = 0,
+  ARKNIGHTS = 1,
+}
+
+export interface BundleLoadOptions {
+  unityCNKey?: string;
+  env?: BundleEnv;
+}
+
 export interface ResourceItem {
   /** Unique ID, and shouldn't be changed for the same resource even if the version is changed */
   id: string | number;
@@ -23,6 +33,12 @@ export interface RepositoryItem {
   id: string;
   /** Repository name */
   name: string;
+  /**
+   * Bundle load options
+   *
+   * @see https://github.com/arkntools/unity-js/blob/a5c66237fd4dbeb16b8beb3bffbfe6fee1bea459/src/bundle.ts#L80-L90
+   */
+  loadOptions?: BundleLoadOptions;
   /**
    * Get resource version
    *

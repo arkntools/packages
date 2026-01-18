@@ -1,5 +1,5 @@
-import type { AssetInfo, RepositoryItem, ResourceItem } from '@arkntools/as-web-repo';
-import { defineRepositories, getResourceHelper, lib } from '@arkntools/as-web-repo';
+import type { AssetInfo, BundleLoadOptions, RepositoryItem, ResourceItem } from '@arkntools/as-web-repo';
+import { BundleEnv, defineRepositories, getResourceHelper, lib } from '@arkntools/as-web-repo';
 import { getUnpackerName, unpack } from './fbs';
 
 interface NetWorkConfig {
@@ -52,8 +52,13 @@ const fetchJson = async <T = any>(url: string): Promise<T> =>
 
 const formatDatName = (name: string) => name.replace(/\.[^.]+$/, '.dat').replace(/\//g, '_');
 
+const loadOptions: BundleLoadOptions = {
+  env: BundleEnv.ARKNIGHTS,
+};
+
 class ArknightsRepository implements RepositoryItem {
   readonly id: string;
+  readonly loadOptions = loadOptions;
 
   private urls?: NetworkUrls;
 

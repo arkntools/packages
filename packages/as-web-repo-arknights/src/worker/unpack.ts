@@ -12,10 +12,7 @@ const jsonStringify = (data: unknown) =>
 
 const unpack = async (name: string, data: Uint8Array) => {
   if (name === '__decrypt_text_asset__') return decryptTextAsset(data);
-  const fbsJs = await import(
-    // @ts-ignore
-    'https://unpkg.com/@arkntools/arknights-fbs-js@0'
-  );
+  const fbsJs = await import('https://unpkg.com/@arkntools/arknights-fbs-js@0' as any);
   const obj = await fbsJs[name](data.slice(START_OFFSET));
   if (Object.values(obj).every(value => !value || isFunction(value))) {
     console.error(name, obj);
