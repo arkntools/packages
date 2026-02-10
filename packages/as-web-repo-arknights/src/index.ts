@@ -62,7 +62,7 @@ class ArknightsRepository implements RepositoryItem {
 
   private urls?: NetworkUrls;
 
-  constructor(readonly name: string, readonly cfgUrl: string) {
+  constructor(readonly name: string, readonly cfgUrl: string, readonly platform = 'Android') {
     this.id = name.toLowerCase().replace(/ /g, '_');
   }
 
@@ -109,12 +109,12 @@ class ArknightsRepository implements RepositoryItem {
 
   private async getAssetsBaseUrl(version: string) {
     const urls = await this.getUrlCfg();
-    return `${urls.hu}/Android/assets/${version}`;
+    return `${urls.hu}/${this.platform}/assets/${version}`;
   }
 
   private async getResVersionUrl() {
     const urls = await this.getUrlCfg();
-    return urls.hv.replace('{0}', 'Android');
+    return urls.hv.replace('{0}', this.platform);
   }
 
   private async getResUrl(version: string, name: string) {
@@ -125,13 +125,18 @@ class ArknightsRepository implements RepositoryItem {
 
 export default defineRepositories(
   [
+    ['CN', 'ak-conf.hypergryph.com', 'Windows'],
     ['CN', 'ak-conf.hypergryph.com'],
     ['US', 'ak-conf.arknights.global'],
     ['JP', 'ak-conf.arknights.jp'],
     ['KR', 'ak-conf.arknights.kr'],
     ['TW', 'ak-conf-tw.gryphline.com'],
   ].map(
-    ([server, host]) =>
-      new ArknightsRepository(`Arknights ${server}`, `https://${host}/config/prod/official/network_config`)
+    ([server, host, platform]) =>
+      new ArknightsRepository(
+        `Arknights ${server}${platform ? ` ${platform}` : ''}`,
+        `https://${host}/config/prod/official/network_config`,
+        platform
+      )
   )
 );
