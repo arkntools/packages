@@ -6,26 +6,35 @@ const START_OFFSET = 128;
 const jsonStringify = (data: unknown) =>
   JSON.stringify(
     data,
-    (key, value) => (typeof value === 'bigint' ? (JSON as any).rawJSON?.(value.toString()) ?? Number(value) : value),
-    2
+    (key, value) =>
+      typeof value === 'bigint'
+        ? ((JSON as any).rawJSON?.(value.toString()) ?? Number(value))
+        : value,
+    2,
   );
 
 const unpack = async (name: string, data: Uint8Array) => {
-  if (name === '__decrypt_text_asset__') return decryptTextAsset(data);
   const fbsJs = await import('https://unpkg.com/@arkntools/arknights-fbs-js@0' as any);
   const obj = await fbsJs[name](data.slice(START_OFFSET));
   if (Object.values(obj).every(value => !value || isFunction(value))) {
     console.error(name, obj);
     throw new Error('unpack failed');
   }
-  return jsonStringify(obj);
+  return obj;
 };
+
+const unpackStringified = async (name: string, data: Uint8Array) =>
+  name === '__decrypt_text_asset__'
+    ? decryptTextAsset(data)
+    : jsonStringify(await unpack(name, data));
 
 const AES_KEY = new TextEncoder().encode('UITpAi82pHAWwnzq');
 const AES_IV_MASK = new TextEncoder().encode('HRMCwPonJLIB3WCl');
 const AES_IV_LENGTH = 16;
 
-const getAesKey = once(() => crypto.subtle.importKey('raw', AES_KEY, 'AES-CBC', false, ['decrypt']));
+const getAesKey = once(() =>
+  crypto.subtle.importKey('raw', AES_KEY, 'AES-CBC', false, ['decrypt']),
+);
 
 const xorUint8Array = (a: Uint8Array, b: Uint8Array) => {
   const length = Math.min(a.length, b.length);
@@ -57,6 +66,7 @@ const decryptTextAsset = async (data: Uint8Array) => {
 
 const exposeObj = {
   unpack,
+  unpackStringified,
 };
 
 export type UnpackWorker = typeof exposeObj;

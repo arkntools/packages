@@ -14,5 +14,8 @@
     "postinstall": "bun run build:deps",
     "typecheck": "bun run --filter './packages/*' --if-present typecheck",
     "update-lock": "bun update --lockfile-only"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@arkntools/as-web-repo-arknights",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "type": "module",
   "main": "dist/index.js",
   "author": "神代綺凛 <i@loli.best>",
@@ -24,7 +24,9 @@
   "devDependencies": {
     "@arkntools/as-web-repo": "workspace:*",
     "comlink": "^4.4.2",
-    "es-toolkit": "^1.44.0",
+    "es-toolkit": "^1.52.0",
+    "fflate": "^0.8.3",
+    "idb-keyval": "^6.3.0",
     "typescript": "catalog:"
   }
 }

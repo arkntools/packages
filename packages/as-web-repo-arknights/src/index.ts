@@ -1,6 +1,14 @@
-import type { AssetInfo, BundleLoadOptions, RepositoryItem, ResourceItem } from '@arkntools/as-web-repo';
+import type {
+  AssetInfo,
+  BundleLoadOptions,
+  RepositoryItem,
+  ResourceItem,
+} from '@arkntools/as-web-repo';
 import { BundleEnv, defineRepositories, getResourceHelper, lib } from '@arkntools/as-web-repo';
-import { getUnpackerName, unpack } from './fbs';
+import { unzipSync } from 'fflate';
+import { getUnpackerName, unpack, unpackManifest } from './fbs';
+import type { ResourceManifest } from './fbs';
+import { ManifestCache } from './manifestCache';
 
 interface NetWorkConfig {
   configVer: string;
@@ -50,6 +58,17 @@ const fetchJson = async <T = any>(url: string): Promise<T> =>
     });
   });
 
+const fetchBuffer = async (url: string): Promise<ArrayBuffer> =>
+  new Promise((resolve, reject) => {
+    lib.request({
+      url,
+      responseType: 'arraybuffer',
+      fetch: true,
+      onload: res => resolve(res.response),
+      onerror: res => reject(res.error),
+    });
+  });
+
 const formatDatName = (name: string) => name.replace(/\.[^.]+$/, '.dat').replace(/\//g, '_');
 
 const loadOptions: BundleLoadOptions = {
@@ -62,7 +81,11 @@ class ArknightsRepository implements RepositoryItem {
 
   private urls?: NetworkUrls;
 
-  constructor(readonly name: string, readonly cfgUrl: string, readonly platform = 'Android') {
+  constructor(
+    readonly name: string,
+    readonly cfgUrl: string,
+    readonly platform = 'Android',
+  ) {
     this.id = name.toLowerCase().replace(/ /g, '_');
   }
 
@@ -74,7 +97,15 @@ class ArknightsRepository implements RepositoryItem {
 
   async getResourceList(version: string) {
     const assetsBaseUrl = await this.getAssetsBaseUrl(version);
-    const { abInfos } = await fetchJson<{ abInfos: AbInfo[] }>(`${assetsBaseUrl}/hot_update_list.json`);
+    const { abInfos, manifestName } = await fetchJson<{
+      abInfos: AbInfo[];
+      manifestName?: string;
+    }>(`${assetsBaseUrl}/hot_update_list.json`);
+
+    const searchStringsByBundle = manifestName
+      ? await this.getSearchStringsByBundle(version, manifestName)
+      : new Map<string, string[]>();
+
     return abInfos
       .filter(({ name }) => !name.endsWith('.idx'))
       .map(({ cid, name, hash, totalSize, abSize }) => ({
@@ -83,7 +114,55 @@ class ArknightsRepository implements RepositoryItem {
         hash,
         size: totalSize,
         abSize,
+        ...(searchStringsByBundle.has(name) && { searchStrings: searchStringsByBundle.get(name) }),
       }));
+  }
+
+  private async getSearchStringsByBundle(version: string, manifestName: string) {
+    const searchStringsByBundle = new Map<string, string[]>();
+    try {
+      const manifest = await this.getManifest(version, manifestName);
+      for (const { bundleIndex, path } of manifest.assetToBundleList) {
+        const bundleName = manifest.bundles[bundleIndex]?.name;
+        if (!bundleName || !path) continue;
+        const paths = searchStringsByBundle.get(bundleName) ?? [];
+        paths.push(path);
+        searchStringsByBundle.set(bundleName, paths);
+      }
+    } catch (error) {
+      console.error('Failed to load resource manifest', error);
+    }
+    return searchStringsByBundle;
+  }
+
+  private async getManifest(version: string, manifestName: string): Promise<ResourceManifest> {
+    const cache = new ManifestCache(this.id);
+
+    try {
+      const { name: cachedName, data: cachedData } = await cache.get();
+      if (
+        cachedName === manifestName &&
+        cachedData &&
+        Array.isArray(cachedData.assetToBundleList) &&
+        Array.isArray(cachedData.bundles)
+      ) {
+        return cachedData;
+      }
+    } catch {}
+
+    const url = `${await this.getAssetsBaseUrl(version)}/${formatDatName(manifestName)}`;
+    const zip = await fetchBuffer(url);
+    const files = Object.values(unzipSync(new Uint8Array(zip)));
+    if (files.length !== 1 || files[0]!.length <= 128) throw new Error('Invalid manifest archive');
+    const manifest = await unpackManifest(files[0]!);
+    if (!Array.isArray(manifest.assetToBundleList) || !Array.isArray(manifest.bundles)) {
+      throw new Error('Invalid resource manifest');
+    }
+
+    try {
+      await cache.set({ name: manifestName, data: manifest });
+    } catch {}
+    return manifest;
   }
 
   getResource = getResourceHelper(async (version: string, { name }: ResourceItem) => {
@@ -136,7 +215,7 @@ export default defineRepositories(
       new ArknightsRepository(
         `Arknights ${server}${platform ? ` ${platform}` : ''}`,
         `https://${host}/config/prod/official/network_config`,
-        platform
-      )
-  )
+        platform,
+      ),
+  ),
 );

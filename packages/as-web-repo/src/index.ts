@@ -20,6 +20,8 @@ export interface ResourceItem {
   id: string | number;
   /** Resource name */
   name: string;
+  /** Additional strings to match when searching resources */
+  searchStrings?: string[];
   /** Resource hash */
   hash: string;
   /** File size */
@@ -95,10 +97,13 @@ export const getResourceHelper =
   (
     handler: (
       version: string,
-      item: ResourceItem
+      item: ResourceItem,
     ) => MaybePromise<
-      Omit<GmXmlhttpRequestOption<any>, 'responseType' | 'onload' | 'onerror' | 'onabort' | 'onprogress' | 'fetch'>
-    >
+      Omit<
+        GmXmlhttpRequestOption<any>,
+        'responseType' | 'onload' | 'onerror' | 'onabort' | 'onprogress' | 'fetch'
+      >
+    >,
   ): RepositoryItem['getResource'] =>
   async ({ version, item, options, signal }) => {
     const basicOptions = await handler(version, item);

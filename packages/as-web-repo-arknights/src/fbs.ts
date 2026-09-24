@@ -2,6 +2,11 @@ import { wrap } from 'comlink';
 import { once } from 'es-toolkit';
 import type { UnpackWorker } from './worker/unpack';
 
+export interface ResourceManifest {
+  bundles: { name: string }[];
+  assetToBundleList: { bundleIndex: number; path: string }[];
+}
+
 const getWorker = once(async () => {
   const res = await fetch(new URL('./worker/unpack.js', import.meta.url));
   const worker = new Worker(URL.createObjectURL(await res.blob()));
@@ -88,15 +93,15 @@ const availableFbs = [
 ];
 
 const fbsNameMap = Object.fromEntries(
-  availableFbs.flatMap(({ path, list }) => list.map(name => [`${path}${name}`, name]))
+  availableFbs.flatMap(({ path, list }) => list.map(name => [`${path}${name}`, name])),
 );
 
 const toUint8Array = async (data: unknown) => {
   return data instanceof ArrayBuffer
     ? new Uint8Array(data)
     : data instanceof Blob
-    ? new Uint8Array(await data.arrayBuffer())
-    : null;
+      ? new Uint8Array(await data.arrayBuffer())
+      : null;
 };
 
 export const getUnpackerName = (container: string) => {
@@ -105,7 +110,8 @@ export const getUnpackerName = (container: string) => {
   const name = fbsNameMap[key];
   if (name) return name;
   if (key.startsWith('/levels/')) return 'prts___levels';
-  if (container.startsWith('dyn/gamedata/excel/') && container.endsWith('.bytes')) return '__decrypt_text_asset__';
+  if (container.startsWith('dyn/gamedata/excel/') && container.endsWith('.bytes'))
+    return '__decrypt_text_asset__';
 };
 
 export const unpack = async (container: string, data: unknown) => {
@@ -114,9 +120,14 @@ export const unpack = async (container: string, data: unknown) => {
     const worker = await getWorker();
     const bytes = await toUint8Array(data);
     if (!bytes) return data;
-    return await worker.unpack(name, bytes);
+    return await worker.unpackStringified(name, bytes);
   } catch (error) {
     console.error(error);
     return data;
   }
+};
+
+export const unpackManifest = async (bytes: Uint8Array): Promise<ResourceManifest> => {
+  const worker = await getWorker();
+  return worker.unpack('resource_manifest', bytes);
 };
