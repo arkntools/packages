@@ -6,10 +6,13 @@
       "packages/*"
     ],
     "catalog": {
-      "typescript": "^5"
+      "typescript": "^6.0.3"
     }
   },
   "scripts": {
+    "build:deps": "bun run --cwd packages/userscript-extension build && bun run --cwd packages/as-web-repo build",
+    "postinstall": "bun run build:deps",
+    "typecheck": "bun run --filter './packages/*' --if-present typecheck",
     "update-lock": "bun update --lockfile-only"
   }
 }

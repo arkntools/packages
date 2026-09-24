@@ -16,10 +16,11 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@arkntools/userscript-extension": "workspace:^"
+    "@arkntools/userscript-extension": "workspace:*"
   },
   "devDependencies": {
     "typescript": "catalog:"

@@ -15,13 +15,14 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build --target=browser --outdir=dist --minify ./src/index.ts ./src/worker/unpack.ts"
+    "build": "bun build --target=browser --outdir=dist --minify ./src/index.ts ./src/worker/unpack.ts",
+    "typecheck": "tsc --noEmit"
   },
   "publishConfig": {
     "access": "public"
   },
   "devDependencies": {
-    "@arkntools/as-web-repo": "workspace:^",
+    "@arkntools/as-web-repo": "workspace:*",
     "comlink": "^4.4.2",
     "es-toolkit": "^1.44.0",
     "typescript": "catalog:"
