@@ -7,7 +7,6 @@ import type {
 import { BundleEnv, defineRepositories, getResourceHelper, lib } from '@arkntools/as-web-repo';
 import { getUnpackerName, unpack, unpackManifest } from './fbs';
 import type { ResourceManifest } from './fbs';
-import { ManifestCache } from './manifestCache';
 import { unzipSingle } from './unzip';
 
 interface NetWorkConfig {
@@ -136,20 +135,6 @@ class ArknightsRepository implements RepositoryItem {
   }
 
   private async getManifest(version: string, manifestName: string): Promise<ResourceManifest> {
-    const cache = new ManifestCache(this.id);
-
-    try {
-      const { name: cachedName, data: cachedData } = await cache.get();
-      if (
-        cachedName === manifestName &&
-        cachedData &&
-        Array.isArray(cachedData.assetToBundleList) &&
-        Array.isArray(cachedData.bundles)
-      ) {
-        return cachedData;
-      }
-    } catch {}
-
     const url = `${await this.getAssetsBaseUrl(version)}/${formatDatName(manifestName)}`;
     const zip = await fetchBuffer(url);
     const bytes = await unzipSingle(new Uint8Array(zip));
@@ -160,9 +145,6 @@ class ArknightsRepository implements RepositoryItem {
       throw new Error('Invalid resource manifest');
     }
 
-    try {
-      await cache.set({ name: manifestName, data: manifest });
-    } catch {}
     return manifest;
   }
 
