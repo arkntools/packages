@@ -5,10 +5,10 @@ import type {
   ResourceItem,
 } from '@arkntools/as-web-repo';
 import { BundleEnv, defineRepositories, getResourceHelper, lib } from '@arkntools/as-web-repo';
-import { unzipSync } from 'fflate';
 import { getUnpackerName, unpack, unpackManifest } from './fbs';
 import type { ResourceManifest } from './fbs';
 import { ManifestCache } from './manifestCache';
+import { unzipSingle } from './unzip';
 
 interface NetWorkConfig {
   configVer: string;
@@ -152,9 +152,10 @@ class ArknightsRepository implements RepositoryItem {
 
     const url = `${await this.getAssetsBaseUrl(version)}/${formatDatName(manifestName)}`;
     const zip = await fetchBuffer(url);
-    const files = Object.values(unzipSync(new Uint8Array(zip)));
-    if (files.length !== 1 || files[0]!.length <= 128) throw new Error('Invalid manifest archive');
-    const manifest = await unpackManifest(files[0]!);
+    const bytes = await unzipSingle(new Uint8Array(zip));
+    if (bytes.length <= 128) throw new Error('Invalid manifest archive');
+
+    const manifest = await unpackManifest(bytes);
     if (!Array.isArray(manifest.assetToBundleList) || !Array.isArray(manifest.bundles)) {
       throw new Error('Invalid resource manifest');
     }
